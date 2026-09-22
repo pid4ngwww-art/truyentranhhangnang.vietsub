@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truyện Tranh Hạng Nặng</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; margin: 0; padding: 0; }
+        header { background-color: #1f1f1f; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; color: #ff4757; border-bottom: 2px solid #ff4757; position: sticky; top: 0; z-index: 100; }
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .nut-bam { display: inline-block; color: #ff4757; text-decoration: none; font-size: 15px; margin-bottom: 15px; cursor: pointer; font-weight: bold; }
+        h2 { font-size: 18px; border-left: 4px solid #ff4757; padding-left: 8px; }
+        .grid-truyen { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .item-truyen { background-color: #1f1f1f; border-radius: 8px; overflow: hidden; border: 1px solid #333; cursor: pointer; }
+        .item-truyen img { width: 100%; height: 200px; object-fit: cover; }
+        .item-truyen .ten-truyen { padding: 8px; font-size: 14px; font-weight: bold; text-align: center; }
+        .thong-tin-truyen { display: flex; gap: 15px; margin-bottom: 25px; background-color: #1f1f1f; padding: 15px; border-radius: 8px; }
+        .thong-tin-truyen img { width: 100px; height: 140px; object-fit: cover; border-radius: 4px; }
+        .chi-tiet h3 { margin: 0 0 8px 0; color: #ff4757; }
+        .chi-tiet p { margin: 4px 0; font-size: 13px; color: #ccc; }
+        .danh-sach-chap { display: flex; flex-direction: column; gap: 10px; }
+        .item-chap { background-color: #1f1f1f; padding: 12px 15px; border-radius: 6px; font-size: 15px; display: flex; justify-content: space-between; border: 1px solid #333; cursor: pointer; }
+        .khu-vuc-doc { background-color: #1a1a1a; padding: 15px; border-radius: 8px; }
+        .tieu-de-chuong { text-align: center; color: #ff4757; margin-bottom: 20px; font-size: 20px; }
+        .noi-dung-chu { font-size: 18px; line-height: 1.8; color: #e0e0e0; white-space: pre-line; text-align: justify; }
+        .dieu-huong-cuoi { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 15px; border-top: 1px solid #333; }
+        .nut-chuyen-trang { background-color: #ff4757; color: white; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; min-width: 80px; }
+        .nut-vo-dung { background-color: #444; color: #888; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <header>TRUYỆN TRANH HẠNG NẶNG</header>
+    <div class="container">
+        <!-- MÀN HÌNH 1: TRANG CHỦ -->
+        <div id="man-hinh-trang-chu">
+            <h2>TRUYỆN MỚI CẬP NHẬT</h2>
+            <div class="grid-truyen">
+                <!-- Bộ 1: Baku Madarame -->
+                <div class="item-truyen" onclick="moTrangChonChap('truyen1')">
+                    <img src="https://i.postimg.cc/QNbbNKf5/Tumblr-1e5d2777462111231186b745bbd5b84b-2a9d8b38-1280.webp" alt="Bìa">
+                    <div class="ten-truyen">(Usogui-Toshio Sako)</div> 
+                </div>
+                <!-- Bộ 2: Để tên trống -->
+                <div class="item-truyen" onclick="moTrangChonChap('truyen2')">
+                    <img src="https://i.postimg.cc/sxLCZjYs/jojosbr.png" alt="Bìa">
+                    <div class="ten-truyen">... (Chờ cập nhật) ...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MÀN HÌNH 2: CHỌN CHAP (Có Tác giả, Thể loại) -->
+        <div id="man-hinh-chon-chap" style="display: none;">
+            <div class="nut-bam" onclick="veTrangChu()">← Quay lại trang chủ</div>
+            <div class="thong-tin-truyen">
+                <img id="anh-bia-chi-tiet" src="" alt="Bìa">
+                <div class="chi-tiet">
+                    <h3 id="ten-truyen-chi-tiet">Tên Truyện</h3>
+                    <p><strong>Tác giả:</strong> <span id="tac-gia-chi-tiet">...</span></p>
+                    <p><strong>Thể loại:</strong> <span id="the-loai-chi-tiet">...</span></p>
+                    <p><strong>Trạng thái:</strong> Đang dịch (Vietsub)</p>
+                </div>
+            </div>
+            <h2>DANH SÁCH CHƯƠNG</h2>
+            <div class="danh-sach-chap" id="danh-sach-chap-render"></div>
+        </div>
+
+        <!-- MÀN HÌNH 3: ĐỌC TRUYỆN (LƯỚT DỌC TỪ TRÊN XUỐNG) -->
+        <div id="man-hinh-doc-truyen" style="display: none;">
+            <div class="nut-bam" onclick="veTrangChonChap()">← Quay lại danh sách chap</div>
+            <div class="khu-vuc-doc">
+                <div class="tieu-de-chuong" id="ten-chap-doc">Chương X</div>
+                <div class="noi-dung-chu" id="noi-dung-chu-render"></div>
+                <div class="dieu-huong-cuoi">
+                    <div class="nut-chuyen-trang" id="nut-chap-truoc" onclick="chuyenChap(-1)">Chap trước</div>
+                    <div class="nut-chuyen-trang" id="nut-chap-sau" onclick="chuyenChap(1)">Chap sau</div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- Đóng thẻ container -->
+      <!-- --- PHẦN 3 MỚI: CẬP NHẬT TÓM TẮT VÀ TRUYỆN TRANH LƯỚT DỌC --- -->
+    <script>
+        // KHO DỮ LIỆU TRUYỆN TRANH
+        const KHO_TRUYEN = {
+            truyen1: {
+                ten: "(Usogui)",
+                tacGia: "Toshio Sako",
+                theLoai: "Psychological, Seinen, Gambling, Thriller,  Action, Psychological",
+                bia: "https://i.postimg.cc/QNbbNKf5/Tumblr-1e5d2777462111231186b745bbd5b84b-2a9d8b38-1280.webp",
+                // PHẦN TÓM TẮT NHANH DIỄN BIẾN TRUYỆN
+                tomTat: "Câu chuyện xoay quanh Baku Madarame, một thiên tài cờ bạc được biết đến với biệt danh 'Usogui' (Kẻ ăn lời nói dối). Baku dấn thân vào những canh bạc đỉnh cao, nơi người chơi phải cược cả mạng sống của mình để đối đầu với Kakerou - một tổ chức trọng tài ngầm kiểm soát thế giới cờ bạc.",
+                
+                chương: [
+                    { 
+                        so: 1, 
+                        ten: "Chương 1: Kẻ ăn lời nói dối", 
+                        // Dạng truyện chữ (nếu cần dùng):
+                        noiDung: "Tóm tắt chap 1: Baku Madarame gặp gỡ Kaji Takaomi, một thanh niên đang sa cơ lỡ vận vì nợ nần cờ bạc. Baku quyết định giúp Kaji bằng cách tham gia vào một trò chơi lừa đảo tại sòng bạc ngầm để lật tẩy tên trùm tại đây, mở đầu cho chuỗi hành trình điên rồ sau này.",
+                        
+                        // DẠNG TRUYỆN TRANH (Dán link ảnh các trang truyện vào đây để lướt dọc từ trên xuống)
+                        // Bạn chỉ cần thay thế các link dưới đây bằng link ảnh truyện thật của bạn
+                        laTruyenTranh: true,
+                        anhTruyen: [
+"https://i.postimg.cc/9MGDpkxs/bia999.png", // Trang 1
+"https://i.postimg.cc/5NTcNrtp/Khong-Co-Tieu-De140-20260920115126.png", // Trang 2
+"https://i.postimg.cc/VLT42rsm/142-20260920135850.png",  // Trang 3
+"https://i.postimg.cc/cJmdDNRQ/Khong-Co-Tieu-De143-20260920142357.png", // Trang 4
+"https://i.postimg.cc/LsTmyMtC/Khong-Co-Tieu-De143-20260920142526.png", // Trang 5
+"https://i.postimg.cc/fbKMHhc8/Khong-Co-Tieu-De143-20260920142536.png", // Trang 6
+"https://i.postimg.cc/2SRRmCn3/trang1.png", // Trang 7
+"https://i.postimg.cc/SxFFqmc8/trang2.png", // Trang 8
+"https://i.postimg.cc/vZFFMG51/trang3.png", // Trang 9
+"https://i.postimg.cc/SxFFqmc9/trang4.png", // Trang 10
+"https://i.postimg.cc/8zQQDTL6/trang5.png", // Trang 11
+"https://i.postimg.cc/6pn0JXhs/trang6.png", // Trang 12
+"https://i.postimg.cc/PxRZv3Mc/IMG-20260920-183551.jpg", // Trang 13
+"https://i.postimg.cc/FH3Z54xF/trang8.png", // Trang 14
+"https://i.postimg.cc/mgCwfsSL/trang9.png", // Trang 15
+"https://i.postimg.cc/T3g9M6cR/Yunagi-Abend-d4ng-12045.png", // Trang 16
+"https://i.postimg.cc/zGNr1J1c/ISO.png", // Trang 17
+"https://i.postimg.cc/13KZmL9K/Milly.png", // Trang 18
+"https://i.postimg.cc/Z5Lhb1Tc/20260920184635.png", // Trang 19
+"https://i.postimg.cc/HktCYfp6/lam.png", // Trang 20
+"https://i.postimg.cc/W17PNQ29/09073684580.png", // Trang 21
+"https://i.postimg.cc/8khGXF2c/21000000000000000000000000.png", // Trang 22
+"https://i.postimg.cc/vHhsMJHd/22000000000000.png", // Trang 23
+"https://i.postimg.cc/65cXwk5w/23006758863.png", // Trang 24
+"https://i.postimg.cc/fTCNZGTD/24000000000000k.png", // Trang 25
+"https://i.postimg.cc/15BQPk5y/25-20260920190606000000000000.png", // Trang 26
+"https://i.postimg.cc/pTX3kZn7/26000000000000000000000000000000000000000000000000000000000000000000000000Daysee.png", // Trang 27
+"https://i.postimg.cc/76YjXV2D/2700000143-20260920205433.png", // Trang 28
+"https://i.postimg.cc/LX6GvT1S/Karasu28.png", // Trang 29
+"https://i.postimg.cc/SsT3PM6b/143-20260920205445002900143-20260920205445.png", // Trang 30
+"https://i.postimg.cc/mDXJnHYf/30.png", // Trang 31
+"https://i.postimg.cc/fL2pP9cW/00000000000000000000000031.png", // Trang 32
+"https://i.postimg.cc/3RSVqvX8/hfsuoncgoirwdjokvduovxawkpbcdinbcsadvjjji32000000000000000000000000143-20260920205445202609202054.png", // Trang 33
+"https://i.postimg.cc/BbL0Jgpw/33A.png", // Trang 34
+"https://i.postimg.cc/vTgsGzhp/34B.png", // Trang 35
+"https://i.postimg.cc/1XnQyHBk/35C.png", // Trang 36
+"https://i.postimg.cc/cCgSdmhP/36ok.png", // Trang 37
+"https://i.postimg.cc/Fzd4hZGt/37lac.png", // Trang 38
+"https://i.postimg.cc/0jMs9fZs/380.png", // Trang 39
+"https://i.postimg.cc/1XnQyHMZ/399999999.png", // Trang 40
+"https://i.postimg.cc/XqGbn8xW/40-thgchominhngubichosirocanhahahaha.png" // Trang 41
+                        ]
+                    },
+                    { 
+                        so: 2, 
+                        ten: "Chương 2: Ăn tiền vay nặng lãi", 
+                        noiDung: "Tóm tắt chap 2: Baku đã dàn dựng một màn lừa đảo tâm lý tinh vi bằng vé số giả để thâm nhập vào băng cho vay nặng lãi và giải cứu Kaji. Khi Kaji rơi vào thế kẹt và đối mặt với áp lực từ bọn chúng, Baku xuất hiện đúng lúc, bình tĩnh ứng phó và xoay chuyển tình thế bằng những lập luận sắc bén cùng sự chuẩn bị kỹ lưỡng.",
+                        laTruyenTranh: true,
+                        anhTruyen: [
+"https://i.postimg.cc/9MGDpkxs/bia999.png", // Trang 0
+"https://i.postimg.cc/5yYVf3p1/qid4yse.png", // Trang 1
+"https://i.postimg.cc/5NH704G6/topapapeppwoodo.png", // Trang 2
+"https://i.postimg.cc/fyCH9ksB/3W.png", // Trang 3
+"https://i.postimg.cc/6qcHvTKh/4E.png", // Trang 4
+"https://i.postimg.cc/QCm6TVDm/5R.png", // Trang 5
+"https://i.postimg.cc/SRdZMj4V/6T.png", // Trang 6
+"https://i.postimg.cc/qBxDYDKr/7Y.png", // Trang 7
+"https://i.postimg.cc/59SKGKz6/8U.png", // Trang 8
+"https://i.postimg.cc/jq4393fC/9IIIIIIIIII.png", // Trang 9
+"https://i.postimg.cc/gjLTfGbr/minhvssiro.png", // Trang 10
+"https://i.postimg.cc/yxf8rXBz/11P.png", // Trang 11
+"https://i.postimg.cc/90xQNtV5/12A.png", // Trang 12
+"https://i.postimg.cc/nrdhwYZf/13S.png", // Trang 13
+"https://i.postimg.cc/x8s1FyYQ/14S.png", // Trang 14
+"https://i.postimg.cc/x8s1FyYc/15DF.png", // Trang 15
+"https://i.postimg.cc/90cBBVFr/16G.png", // Trang 16
+"https://i.postimg.cc/Wzs77jbq/17H.png", // Trang 17
+"https://i.postimg.cc/0jZ0W3b5/18JJ.png", // Trang 18
+"https://i.postimg.cc/2yCxxm8B/19KK.png", // Trang 19
+"https://i.postimg.cc/BbNBYyXS/20L.png", // Trang 20
+"https://i.postimg.cc/x8g3x7c8/21.png", // Trang 21
+"https://i.postimg.cc/jqBHt4hR/20k.png", // Trang 22
+"https://i.postimg.cc/pdZQX4JC/23jpg.png", // Trang 23
+"https://i.postimg.cc/DzgQyHck/24Casper-Sinclair.png", // Trang 24
+"https://i.postimg.cc/W4nmbC7R/25-Action-Psychological-Thriller.png", // Trang 25
+"https://i.postimg.cc/LsTk6wVF/26Evander-Daysee-Narumi-Nguyen-Action-Psychological-Thriller-Yunagi-Abend-d4ng-12045.png", // Trang 26
+"https://i.postimg.cc/wBV5TZkp/27Nagisa.png", // Trang 27
+"https://i.postimg.cc/JnzNyxTL/m28.png", // Trang 28
+"https://i.postimg.cc/3NpF7RS6/2999999999999999999999999999999Goth-girl.png", // Trang 29
+"https://i.postimg.cc/VsbRXGf6/30000000000000000000.png", // Trang 30
+"https://i.postimg.cc/xjbRLxfc/312345678930.png"  // Trang 31
+                        ]
+                    },
+{ 
+    so: 3, 
+    ten: "Chương 3: Cái bẫy thông tin cá nhân", 
+    noiDung: "Tóm tắt chap 3: Baku phát hiện ra tiệm đĩa DVD đã lén bán thông tin cá nhân của Kaji khi anh dọn nhà mới. Khi Kaji hoảng hốt đòi đi trả đĩa quá hạn, Baku bình tĩnh đối chất với chủ tiệm, bóc trần sơ hở từ ký tự địa chỉ bị lỗi để ép họ bồi thường 2 triệu Yên",
+    laTruyenTranh: true,
+    anhTruyen: [
+        "https://i.postimg.cc/9MGDpkxs/bia999.png", // Trang 0
+        "https://picsum.photos", // Trang 1
+        "https://picsum.photos", // Trang 2
+        "https://picsum.photos", // Trang 3
+        "https://picsum.photos", // Trang 4
+        "https://picsum.photos", // Trang 5
+        "https://picsum.photos", // Trang 6
+        "https://picsum.photos", // Trang 7
+        "https://picsum.photos", // Trang 8
+        "https://picsum.photos", // Trang 9
+        "https://picsum.photos", // Trang 10
+        "https://picsum.photos", // Trang 11
+        "https://picsum.photos", // Trang 12
+        "https://picsum.photos", // Trang 13
+        "https://picsum.photos", // Trang 14
+        "https://picsum.photos", // Trang 15
+        "https://picsum.photos", // Trang 16
+        "https://picsum.photos", // Trang 17
+        "https://picsum.photos", // Trang 18
+        "https://picsum.photos", // Trang 19
+        "https://picsum.photos"  // Trang 20
+    ]
+}
+                ]
+            },
+            truyen2: {
+                ten: "... (Chờ cập nhật) ...",
+                tacGia: "Chưa cập nhật",
+                theLoai: "Chưa cập nhật",
+                bia: "https://i.postimg.cc/sxLCZjYs/jojosbr.png",
+                tomTat: "Nội dung đang được cập nhật...",
+                chương: [
+                    { so: 1, ten: "Chương 1: Đang cập nhật", noiDung: "...", laTruyenTranh: false, anhTruyen: [] }
+                ]
+            }
+        };
+
+        let truyenHienTai = "";
+        let chapHienTaiIndex = 0;
+
+        function anTatCaManHinh() {
+            document.getElementById('man-hinh-trang-chu').style.display = 'none';
+            document.getElementById('man-hinh-chon-chap').style.display = 'none';
+            document.getElementById('man-hinh-doc-truyen').style.display = 'none';
+        }
+
+        function moTrangChonChap(idTruyen) {
+            truyenHienTai = idTruyen;
+            const data = KHO_TRUYEN[idTruyen];
+            
+            document.getElementById('ten-truyen-chi-tiet').innerText = data.ten;
+            document.getElementById('anh-bia-chi-tiet').src = data.bia;
+            document.getElementById('tac-gia-chi-tiet').innerText = data.tacGia;
+            document.getElementById('the-loai-chi-tiet').innerText = data.theLoai;
+            
+            // Hiển thị phần tóm tắt truyện vào giao diện
+            let khungChiTiet = document.querySelector('.chi-tiet');
+            let doanTomTat = document.getElementById('tom-tat-truyen');
+            if (!doanTomTat) {
+                khungChiTiet.insertAdjacentHTML('beforeend', `<p id="tom-tat-truyen" style="font-size:12px; color:#aaa; margin-top:8px; border-top:1px dashed #444; padding-top:5px;"><strong>Tóm tắt:</strong> ${data.tomTat}</p>`);
+            } else {
+                doanTomTat.innerHTML = `<strong>Tóm tắt:</strong> ${data.tomTat}`;
+            }
+            
+            let htmlChap = "";
+            data.chương.forEach((item, index) => {
+                htmlChap += `<div class="item-chap" onclick="moTrangDocTruyen(${index})">
+                                <span>${item.ten}</span>
+                                <span style="color: #ff4757; font-size: 13px;">Đọc →</span>
+                             </div>`;
+            });
+            document.getElementById('danh-sach-chap-render').innerHTML = htmlChap;
+
+            anTatCaManHinh();
+            document.getElementById('man-hinh-chon-chap').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function moTrangDocTruyen(indexChap) {
+            chapHienTaiIndex = indexChap;
+            const dataTruyen = KHO_TRUYEN[truyenHienTai];
+            const dataChap = dataTruyen.chương[indexChap];
+
+            document.getElementById('ten-chap-doc').innerText = dataChap.ten;
+            
+            // Kiểm tra xem là truyện tranh hay truyện chữ để hiển thị đúng kiểu lướt dọc
+            let vungChứaChữ = document.getElementById('noi-dung-chu-render');
+            if (dataChap.laTruyenTranh) {
+                let htmlAnh = "";
+                dataChap.anhTruyen.forEach(linkAnh => {
+                    htmlAnh += `<img src="${linkAnh}" style="width:100%; display:block; margin-bottom:8px; border-radius:4px;" alt="Trang truyện">`;
+                });
+                // Chèn thêm phần tóm tắt chap lên đầu trang đọc nếu muốn
+                vungChứaChữ.innerHTML = `<div style="font-size:14px; color:#aaa; background:#222; padding:10px; margin-bottom:15px; border-radius:5px; font-style:italic;">${dataChap.noiDung}</div>` + htmlAnh;
+            } else {
+                vungChứaChữ.innerText = dataChap.noiDung;
+            }
+
+            const nutTruoc = document.getElementById('nut-chap-truoc');
+            const nutSau = document.getElementById('nut-chap-sau');
+
+            if (indexChap === 0) {
+                nutTruoc.classList.add('nut-vo-dung');
+            } else {
+                nutTruoc.classList.remove('nut-vo-dung');
+            }
+
+            if (indexChap === dataTruyen.chương.length - 1) {
+                nutSau.classList.add('nut-vo-dung');
+                nutSau.innerText = "Hết chap";
+            } else {
+                nutSau.classList.remove('nut-vo-dung');
+                nutSau.innerText = "Chap sau";
+            }
+
+            anTatCaManHinh();
+            document.getElementById('man-hinh-doc-truyen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function chuyenChap(huongDi) {
+            const indexMoi = chapHienTaiIndex + huongDi;
+            const dataTruyen = KHO_TRUYEN[truyenHienTai];
+
+            if (indexMoi >= 0 && indexMoi < dataTruyen.chương.length) {
+                moTrangDocTruyen(indexMoi);
+            }
+        }
+
+        function veTrangChu() {
+            anTatCaManHinh();
+            document.getElementById('man-hinh-trang-chu').style.display = 'block';
+        }
+
+        function veTrangChonChap() {
+            moTrangChonChap(truyenHienTai);
+        }
+    </script>
